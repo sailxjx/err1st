@@ -1,0 +1,33 @@
+{
+  "name": "err1st",
+  "version": "0.0.0",
+  "description": "Custom error object",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sailxjx/err1st"
+  },
+  "keywords": [
+    "error"
+  ],
+  "author": {
+    "name": "sailxjx",
+    "url": "http://sailxjx.github.io/blog"
+  },
+  "license": {
+    "type": "MIT",
+    "url": "http://sailxjx.mit-license.org"
+  },
+  "devDependencies": {
+    "cake-dog": "~0.2.1",
+    "should": "~2.1.0",
+    "coffee-script": "~1.6.3",
+    "mocha": "~1.14.0",
+    "colors": "~0.6.2"
+  },
+  "dependencies": {
+  }
+}
