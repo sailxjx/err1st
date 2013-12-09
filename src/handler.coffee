@@ -20,6 +20,8 @@ class Handler
               @_map[k] = {}
               for i, _v of mapReflect
                 @_map[k][_v] = v[i]
+            else if typeof v is 'number'
+              @_map[k] = {code: v}
             else
               @_map[k] = v
           return @_map

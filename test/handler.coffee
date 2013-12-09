@@ -12,6 +12,12 @@ describe 'handler', ->
           DB_ERROR: [500101, '数据库错误']
         handler.map.DB_ERROR.code.should.be.eql(500101)
 
+    it 'should accept non-object map', ->
+      handler.validate ->
+        @map =
+          NO_OBJECT: 674621
+        handler.map.NO_OBJECT.code.should.be.eql(674621)
+
   describe 'handler#parse', ->
 
     it 'should parse the correct message', ->
