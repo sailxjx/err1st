@@ -41,3 +41,16 @@ describe 'handler', ->
         err.toMsg().should.be.eql("Hello Jerry, You've got an error")
         errZh = handler.parse(err, {lang: 'zh'})
         errZh.toMsg().should.be.eql('你好 Jerry, 你得到了一个错误')
+
+  describe 'handler#customErrorName', ->
+
+    it 'should have custom error name', ->
+
+      _handler = new handler.Handler
+      _handler.validate ->
+        @name = 'CustomError'
+        @map =
+          UPDATE_ERROR: [500102, "更新错误"]
+
+        err = new Err("UPDATE_ERROR")
+        _handler.parse(err).toString().should.be.eql('CustomError: 更新错误')

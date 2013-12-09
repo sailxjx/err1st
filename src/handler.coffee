@@ -9,6 +9,7 @@ class Handler
     @_map = {}
     @locales = ['en']
     @localeDir = "#{process.cwd()}/locales"
+    @name = null
 
     Object.defineProperties this,
       map:
@@ -34,6 +35,7 @@ class Handler
     err.code = _map.code
     lang = options.lang or @locales[0]
     msg = _map.msg or @i18n()[lang]?[_phrase]
+    err.name = @name if @name?
 
     if typeof msg is 'function'
       err.message = msg.apply(err, err.msgData)
