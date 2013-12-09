@@ -1,6 +1,6 @@
 {
   "name": "err1st",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Custom error object",
   "main": "lib/index.js",
   "scripts": {
@@ -28,6 +28,5 @@
     "mocha": "~1.14.0",
     "colors": "~0.6.2"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
