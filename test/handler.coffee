@@ -55,6 +55,9 @@ describe 'handler', ->
           STRING_ERROR: [123455, 'something wrong']
         handler.parse('STRING_ERROR').toMsg().should.be.eql("something wrong")
 
+    it 'should use default err when not defined', ->
+      handler.parse('undefined').toMsg().should.be.eql('Unknown Error')
+
   describe 'handler#customErrorName', ->
 
     it 'should have custom error name', ->

@@ -26,12 +26,16 @@ class Handler
               @_map[k] = v
           return @_map
 
+    @map =
+      defaultError: [500100, 'Unknown Error']
+
   validate: (fn) ->
     fn.call(this, this) if typeof fn is 'function'
 
   parse: (err, options = {}) ->
     err = new Err(err) if typeof err is 'string'
-    return err unless err instanceof Err and @map[err.toPhrase()]
+    unless err instanceof Err and @map[err.toPhrase()]
+      err = new Err('defaultError')
 
     _phrase = err.toPhrase()
     _map = @map[_phrase]
