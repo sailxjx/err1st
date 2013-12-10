@@ -48,6 +48,13 @@ describe 'handler', ->
         errZh = handler.parse(err, {lang: 'zh'})
         errZh.toMsg().should.be.eql('你好 Jerry, 你得到了一个错误')
 
+    it 'should parse the string typed error', ->
+
+      handler.validate ->
+        @map =
+          STRING_ERROR: [123455, 'something wrong']
+        handler.parse('STRING_ERROR').toMsg().should.be.eql("something wrong")
+
   describe 'handler#customErrorName', ->
 
     it 'should have custom error name', ->

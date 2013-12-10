@@ -30,6 +30,7 @@ class Handler
     fn.call(this, this) if typeof fn is 'function'
 
   parse: (err, options = {}) ->
+    err = new Err(err) if typeof err is 'string'
     return err unless err instanceof Err and @map[err.toPhrase()]
 
     _phrase = err.toPhrase()
