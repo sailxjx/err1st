@@ -34,14 +34,21 @@ class Handler
 
   parse: (err, options = {}) ->
     err = new Err(err) if typeof err is 'string'
+
     unless err instanceof Err and @map[err.toPhrase()]
+      _oriPhrase = err.toPhrase()
       err = new Err('defaultError')
 
     _phrase = err.toPhrase()
     _map = @map[_phrase]
     err.code = _map.code
     lang = options.lang or @locales[0]
-    msg = _map.msg or @i18n()[lang]?[_phrase]
+
+    if _oriPhrase?
+      msg = @i18n(lang, _oriPhrase) or _map.msg
+    else
+      msg = _map.msg or @i18n(lang, _phrase)
+
     err.name = @name if @name?
 
     if typeof msg is 'function'
@@ -51,16 +58,20 @@ class Handler
 
     return err
 
-  i18n: ->
+  i18n: (lang, phrase) ->
     unless @_i18n?
       _i18n = {}
-      for i, lang of @locales
+      for i, _lang of @locales
         try
-          _i18n[lang] = require(path.join(@localeDir, lang))
+          _i18n[_lang] = require(path.join(@localeDir, _lang))
         catch e
-          _i18n[lang] = {}
+          _i18n[_lang] = {}
       @_i18n = _i18n
-    return @_i18n
+
+    if lang? and phrase?
+      return @_i18n?[lang]?[phrase]
+    else
+      return @_i18n
 
 handler = new Handler
 handler.Handler = Handler
