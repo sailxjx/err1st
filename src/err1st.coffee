@@ -1,6 +1,9 @@
 class Err1st extends Error
 
   constructor: (phrase, @msgData...) ->
+    if phrase instanceof Error
+      phrase = phrase.message
+
     Error.captureStackTrace(this, arguments.callee)
     @name = 'Err1st'
     @message = phrase
