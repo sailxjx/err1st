@@ -70,3 +70,10 @@ describe 'handler', ->
 
         err = new Err("UPDATE_ERROR")
         _handler.parse(err).toString().should.be.eql('CustomError: 更新错误')
+
+  describe 'handler#restore', ->
+
+    it 'should get correct Err object from code', ->
+      err = new Err('DB_ERROR')
+      console.log err.toString()
+      handler.restore(500101).toString().should.be.eql(err.toString())

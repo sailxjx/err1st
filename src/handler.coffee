@@ -7,6 +7,7 @@ class Handler
 
   constructor: ->
     @_map = {}
+    @_code = {}
     @locales = ['en']
     @localeDir = "#{process.cwd()}/locales"
     @name = null
@@ -24,6 +25,7 @@ class Handler
               @_map[k] = {code: v}
             else
               @_map[k] = v
+            @_code[@_map[k].code] = k if @_map[k].code?
           return @_map
 
     @map =
@@ -31,6 +33,10 @@ class Handler
 
   validate: (fn) ->
     fn.call(this, this) if typeof fn is 'function'
+
+  # Restore Error from code
+  restore: (code) ->
+    return new Err(@_code[code])
 
   parse: (err, options = {}) ->
     err = new Err(err) if typeof err is 'string'
