@@ -36,7 +36,7 @@ class Handler
 
   # Restore Error from code
   restore: (code) ->
-    return new Err(@_code[code])
+    return new Err(@_code[Number(code)])
 
   parse: (err, options = {}) ->
     err = new Err(err) if typeof err is 'string'
