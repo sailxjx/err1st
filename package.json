@@ -1,6 +1,6 @@
 {
   "name": "err1st",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Custom error object",
   "main": "lib/index.js",
   "scripts": {
