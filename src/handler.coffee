@@ -25,7 +25,7 @@ class Handler
               @_map[k] = {code: v}
             else
               @_map[k] = v
-            @_code[@_map[k].code] = k if @_map[k].code?
+            @_code[Number(String(@_map[k].code)[3..])] = k if @_map[k].code?
           return @_map
 
     @map =

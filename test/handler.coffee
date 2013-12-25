@@ -76,4 +76,4 @@ describe 'handler', ->
     it 'should get correct Err object from code', ->
       err = new Err('DB_ERROR')
       console.log err.toString()
-      handler.restore(500101).toString().should.be.eql(err.toString())
+      handler.restore(101).toString().should.be.eql(err.toString())
