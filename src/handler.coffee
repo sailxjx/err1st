@@ -45,6 +45,8 @@ class Handler
       _oriPhrase = err.toPhrase()
       err = new Err('defaultError')
 
+    return err unless err instanceof Err
+
     _phrase = err.toPhrase()
     _map = @map[_phrase]
     err.code = _map.code
