@@ -41,7 +41,7 @@ class Handler
   parse: (err, options = {}) ->
     err = new Err(err) if typeof err is 'string'
 
-    unless err instanceof Err and @map[err.toPhrase()]
+    unless err instanceof Err and @map[err.toPhrase?()]
       _oriPhrase = err.toPhrase()
       err = new Err('defaultError')
 
