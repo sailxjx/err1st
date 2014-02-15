@@ -26,6 +26,18 @@ describe 'handler', ->
     it 'should accept non-object map', ->
       handler.map.NO_OBJECT.code.should.be.eql(674621)
 
+    it 'should init i18n dictionary on validate', ->
+      _handler = new handler.Handler
+      _handler.validate ->
+        @localeDir = "#{__dirname}/locales"
+        @locales = ['en', 'zh']
+      _handler._i18n['en'].should.have.properties('LANG_ERROR', 'NONE_CODE_ERROR')
+      _handler.validate ->
+        @localeDir = "#{__dirname}/localesmerge"
+        @locales = ['en', 'zh']
+      _handler._i18n['en'].should.have.properties('LANG_ERROR', 'NONE_CODE_ERROR', 'MERGE_ERROR')
+      _handler._i18n['zh'].NONE_CODE_ERROR.should.be.eql('覆盖错误码')
+
   describe 'handler#parse', ->
 
     it 'should parse the correct message', ->

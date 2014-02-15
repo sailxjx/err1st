@@ -1,5 +1,6 @@
 path = require('path')
 Err = require('./err1st')
+util = require('util')
 
 class Handler
 
@@ -8,6 +9,7 @@ class Handler
   constructor: ->
     @_map = {}
     @_code = {}
+    @_i18n = {}
     @locales = ['en']
     @localeDir = "#{process.cwd()}/locales"
     @name = null
@@ -28,15 +30,24 @@ class Handler
             @_code[Number(String(@_map[k].code)[3..])] = k if @_map[k].code?
           return @_map
 
-    @map =
-      defaultError: [500100, 'Unknown Error']
+    @map = defaultError: [500100, 'Unknown Error']
 
   validate: (fn) ->
     fn.call(this, this) if typeof fn is 'function'
+    @_initI18n()
+
+  _initI18n: ->
+    return false unless @localeDir
+    for i, lang of @locales
+      try
+        @_i18n[lang] = {} unless @_i18n[lang]?
+        newI18n = require(path.join(@localeDir, lang))
+        @_i18n[lang] = util._extend(@_i18n[lang], newI18n)
+      catch e
+    return @_i18n
 
   # Restore Error from code
-  restore: (code) ->
-    return new Err(@_code[Number(code)])
+  restore: (code) -> return new Err(@_code[Number(code)])
 
   parse: (err, options = {}) ->
     err = new Err(err) if typeof err is 'string'
@@ -67,15 +78,6 @@ class Handler
     return err
 
   i18n: (lang, phrase) ->
-    unless @_i18n?
-      _i18n = {}
-      for i, _lang of @locales
-        try
-          _i18n[_lang] = require(path.join(@localeDir, _lang))
-        catch e
-          _i18n[_lang] = {}
-      @_i18n = _i18n
-
     if lang? and phrase?
       return @_i18n?[lang]?[phrase]
     else
