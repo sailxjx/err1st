@@ -35,6 +35,7 @@ class Handler
   validate: (fn) ->
     fn.call(this, this) if typeof fn is 'function'
     @_initI18n()
+    return this
 
   _initI18n: ->
     return false unless @localeDir
