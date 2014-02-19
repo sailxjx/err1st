@@ -58,7 +58,7 @@ describe 'handler', ->
       handler.parse('STRING_ERROR').toMsg().should.be.eql("something wrong")
 
     it 'should use default err when not defined', ->
-      handler.parse('undefined').toMsg().should.be.eql('Unknown Error')
+      handler.parse('undefined').toMsg().should.be.eql('unknown error')
 
     it 'should return the default error with specific message', ->
       err = new Err('NONE_CODE_ERROR')

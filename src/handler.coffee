@@ -30,7 +30,7 @@ class Handler
             @_code[Number(String(@_map[k].code)[3..])] = k if @_map[k].code?
           return @_map
 
-    @map = defaultError: [500100, 'Unknown Error']
+    @map = DEFAULT_ERROR: [500100, 'unknown error']
 
   validate: (fn) ->
     fn.call(this, this) if typeof fn is 'function'
@@ -54,8 +54,8 @@ class Handler
     err = new Err(err) if typeof err is 'string'
 
     unless err instanceof Err and @map[err.toPhrase()]
-      _oriPhrase = err.toPhrase?() or 'defaultError'
-      err = new Err('defaultError')
+      _oriPhrase = err.toPhrase?() or 'DEFAULT_ERROR'
+      err = new Err('DEFAULT_ERROR')
 
     return err unless err instanceof Err
 
