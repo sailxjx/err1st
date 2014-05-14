@@ -1,6 +1,6 @@
-should = require('should')
-Err = require('../lib')
-{handler} = require('../lib')
+should = require 'should'
+Err = require '../lib'
+{handler} = require '../lib'
 
 describe 'handler', ->
 
@@ -31,12 +31,18 @@ describe 'handler', ->
       _handler.validate ->
         @localeDir = "#{__dirname}/locales"
         @locales = ['en', 'zh']
-      _handler._i18n['en'].should.have.properties('LANG_ERROR', 'NONE_CODE_ERROR')
+
+      _handler.map.should.have.properties('LANG_ERROR', 'NONE_CODE_ERROR')
+      _handler.map['LANG_ERROR'].should.have.properties('msg_en', 'msg_zh')
+      _handler.map['NONE_CODE_ERROR'].should.have.properties('msg_en', 'msg_zh')
+
+      # Merge defferent locales
       _handler.validate ->
         @localeDir = "#{__dirname}/localesmerge"
         @locales = ['en', 'zh']
-      _handler._i18n['en'].should.have.properties('LANG_ERROR', 'NONE_CODE_ERROR', 'MERGE_ERROR')
-      _handler._i18n['zh'].NONE_CODE_ERROR.should.be.eql('覆盖错误码')
+      _handler.map.should.have.properties('LANG_ERROR', 'NONE_CODE_ERROR', 'MERGE_ERROR')
+      _handler.map['MERGE_ERROR'].should.have.properties('msg_en', 'msg_zh')
+      _handler.map['NONE_CODE_ERROR']['msg_zh'].should.eql('覆盖错误码')
 
   describe 'handler#parse', ->
 
@@ -58,7 +64,8 @@ describe 'handler', ->
       handler.parse('STRING_ERROR').toMsg().should.be.eql("something wrong")
 
     it 'should use default err when not defined', ->
-      handler.parse('undefined').toMsg().should.be.eql('unknown error')
+      handler.parse('undefined').toMsg().should.be.eql('undefined')
+      handler.parse('undefined').toCode().should.eql(100)
 
     it 'should return the default error with specific message', ->
       err = new Err('NONE_CODE_ERROR')
@@ -87,5 +94,19 @@ describe 'handler', ->
 
     it 'should get correct Err object from code', ->
       err = new Err('DB_ERROR')
-      console.log err.toString()
       handler.restore(101).toString().should.be.eql(err.toString())
+
+  describe 'handler#fromOriginalError', ->
+
+    it 'should output the message from the original error object', ->
+
+      err = new Error('SOMETHING_WRONG')
+      _err = handler.parse(err)
+      _err.message.should.eql('SOMETHING_WRONG')
+
+  describe 'handler#ignoreWordCase', ->
+
+    it 'should get the correct Error object even the key is lowercase', ->
+
+      err = new Err('db_error')
+      handler.parse(err).message.should.eql('数据库错误')

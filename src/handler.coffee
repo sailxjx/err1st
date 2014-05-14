@@ -8,17 +8,16 @@ class Handler
 
   constructor: ->
     @_map = {}
-    @_code = {}
-    @_i18n = {}
+    @_codes = {}
     @locales = ['en']
     @localeDir = "#{process.cwd()}/locales"
-    @name = null
 
     Object.defineProperties this,
       map:
         get: -> @_map
         set: (map) ->
           for k, v of map
+            k = k.toUpperCase()
             if v instanceof Array
               @_map[k] = {}
               for i, _v of mapReflect
@@ -27,62 +26,68 @@ class Handler
               @_map[k] = {code: v}
             else
               @_map[k] = v
-            @_code[Number(String(@_map[k].code)[3..])] = k if @_map[k].code?
+            # Save codes in the hash to restore error object from code
+            @_codes[Number(String(@_map[k].code)[3..])] = k if @_map[k].code?
           return @_map
 
     @map = DEFAULT_ERROR: [500100, 'unknown error']
 
   validate: (fn) ->
     fn.call(this, this) if typeof fn is 'function'
-    @_initI18n()
+    @_loadI18n()
     return this
 
-  _initI18n: ->
+  _loadI18n: ->
     return false unless @localeDir
+
+    i18n = {}
+
     for i, lang of @locales
       try
-        @_i18n[lang] = {} unless @_i18n[lang]?
-        newI18n = require(path.join(@localeDir, lang))
-        @_i18n[lang] = util._extend(@_i18n[lang], newI18n)
+        i18n[lang] = require(path.join(@localeDir, lang))
       catch e
-    return @_i18n
+
+    for lang, msgMap of i18n
+      for k, msg of msgMap
+        k = k.toUpperCase()
+        @_map[k] = {} unless @_map[k]
+        @_map[k]["msg_#{lang}"] = msg
+
+    return this
 
   # Restore Error from code
-  restore: (code) -> return new Err(@_code[Number(code)])
+  restore: (code) -> return new Err(@_codes[Number(code)])
 
   parse: (err, options = {}) ->
-    err = new Err(err) if typeof err is 'string'
+    # ---------------- Ensure return an err1st object ----------------
+    if typeof err is 'string'  # Only error phrase
+      err = new Err(err)
 
-    unless err instanceof Err and @map[err.toPhrase()]
-      _oriPhrase = err.toPhrase?() or 'DEFAULT_ERROR'
-      err = new Err('DEFAULT_ERROR')
+    unless err instanceof Err
+      if err instanceof Error  # The origin error object
+        err = new Err(err)
+      else
+        err = new Err('DEFAULT_ERROR')
+    # ---------------- Ensure return an err1st object ----------------
 
-    return err unless err instanceof Err
-
-    _phrase = err.toPhrase()
+    _phrase = err.toPhrase()?.toUpperCase()
     _map = @map[_phrase]
-    err.code = _map.code
+
+    unless _map  # No map error object will remain its own message and a default code
+      err.code or= @map['DEFAULT_ERROR'].code
+      return err
+
+    err.name = @name if @name
+    err.code = _map.code or @map['DEFAULT_ERROR'].code
     lang = options.lang or @locales[0]
-
-    if _oriPhrase?
-      msg = @i18n(lang, _oriPhrase) or _map.msg
-    else
-      msg = _map.msg or @i18n(lang, _phrase)
-
-    err.name = @name if @name?
+    msg = _map["msg_#{lang}"] or _map['msg']
 
     if typeof msg is 'function'
       err.message = msg.apply(err, err.msgData)
-    else
+    else if typeof msg is 'string'
       err.message = msg
 
     return err
-
-  i18n: (lang, phrase) ->
-    if lang? and phrase?
-      return @_i18n?[lang]?[phrase]
-    else
-      return @_i18n
 
 handler = new Handler
 handler.Handler = Handler

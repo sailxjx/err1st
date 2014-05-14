@@ -8,5 +8,5 @@ handler.validate ->
   @map =
     SOMETHING_WRONG: 500100
 
-# throw handler.parse err
+throw handler.parse err
 throw handler.parse err, lang: 'zh'
