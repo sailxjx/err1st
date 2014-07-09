@@ -1,6 +1,6 @@
-path = require('path')
-Err = require('./err1st')
-util = require('util')
+path = require 'path'
+util = require 'util'
+Err = require './err1st'
 
 class Handler
 
@@ -11,6 +11,7 @@ class Handler
     @_codes = {}
     @locales = ['en']
     @localeDir = "#{process.cwd()}/locales"
+    @i18nDict = {}
 
     Object.defineProperties this,
       map:
@@ -38,14 +39,16 @@ class Handler
     return this
 
   _loadI18n: ->
-    return false unless @localeDir
-
     i18n = {}
 
     for i, lang of @locales
+      i18n[lang] = @i18nDict[lang] or {}  # Use the locale variables first
       try
-        i18n[lang] = require(path.join(@localeDir, lang))
+        if @localeDir
+          i18n[lang] = util._extend require(path.join(@localeDir, lang)),
+            i18n[lang]
       catch e
+        # Do nothing
 
     for lang, msgMap of i18n
       for k, msg of msgMap
@@ -74,11 +77,11 @@ class Handler
     _map = @map[_phrase]
 
     unless _map  # No map error object will remain its own message and a default code
-      err.code or= @map['DEFAULT_ERROR'].code
+      err.longcode or= @map['DEFAULT_ERROR'].code
       return err
 
     err.name = @name if @name
-    err.code = _map.code or @map['DEFAULT_ERROR'].code
+    err.longcode = _map.code or @map['DEFAULT_ERROR'].code
     lang = options.lang or @locales[0]
     msg = _map["msg_#{lang}"] or _map['msg']
 

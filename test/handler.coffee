@@ -44,12 +44,26 @@ describe 'handler', ->
       _handler.map['MERGE_ERROR'].should.have.properties('msg_en', 'msg_zh')
       _handler.map['NONE_CODE_ERROR']['msg_zh'].should.eql('覆盖错误码')
 
+    it 'should get i18n dictionary by setting i18n variable', ->
+      _handler = new handler.Handler
+      _handler.validate ->
+        @locales = ['en', 'zh']
+        @i18nDict =
+          en:
+            LANG_ERROR: 'something wrong'
+          zh:
+            LANG_ERROR: '错误'
+      err = new Err('LANG_ERROR')
+      _handler.parse(err, {lang: 'zh'}).message.should.eql '错误'
+
   describe 'handler#parse', ->
 
     it 'should parse the correct message', ->
       err = new Err('UPDATE_ERROR', 'name')
       err = handler.parse(err)
       err.toMsg().should.be.eql('name 更新错误')
+      err.code.should.eql 102
+      err.status.should.eql 500
 
     it 'should parse the correct message in English', ->
       err = new Err('LANG_ERROR', 'Jerry')
@@ -64,8 +78,9 @@ describe 'handler', ->
       handler.parse('STRING_ERROR').toMsg().should.be.eql("something wrong")
 
     it 'should use default err when not defined', ->
-      handler.parse('undefined').toMsg().should.be.eql('undefined')
-      handler.parse('undefined').toCode().should.eql(100)
+      handler.parse('undefined').toMsg().should.be.eql 'undefined'
+      handler.parse('undefined').toCode().should.eql 100
+      handler.parse('undefined').code.should.eql 100
 
     it 'should return the default error with specific message', ->
       err = new Err('NONE_CODE_ERROR')

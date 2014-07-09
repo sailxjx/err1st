@@ -10,13 +10,21 @@ class Err1st extends Error
       @phrase = phrase
     @name = 'Err1st'
 
+    Object.defineProperties this,
+      longcode:
+        get: -> @_longcode
+        set: (longcode) ->
+          @_longcode = Number(longcode)
+          @code = Number(String(longcode)[3..])
+          @status = Number(String(longcode)[0..2])
+
   toJSON: ->
-    code: @toCode()
-    message:  @toMsg()
+    code: @code
+    message:  @message
 
-  toCode: -> Number(String(@code)[3..]) if @code?
+  toCode: -> @code
 
-  toStatus: -> Number(String(@code)[0..2]) if @code?
+  toStatus: -> @status
 
   toPhrase: -> @phrase
 
