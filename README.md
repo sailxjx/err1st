@@ -47,7 +47,10 @@ Err1st: Alice, 你犯了个错误
 
 # ChangeLog
 
-## v0.1.1
+## 0.1.2
+* use 'DNA' to identify the same error instance
+
+## 0.1.1
 * err.code is equal to err.toCode() now
 * handler.validate now support directly set a i18n dict.
 

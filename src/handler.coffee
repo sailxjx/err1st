@@ -66,7 +66,7 @@ class Handler
     if typeof err is 'string'  # Only error phrase
       err = new Err(err)
 
-    unless err instanceof Err
+    unless err?.DNA is 'err1st'
       if err instanceof Error  # The origin error object
         err = new Err(err)
       else

@@ -32,4 +32,6 @@ class Err1st extends Error
 
   stringify: -> JSON.stringify(@toJSON())
 
+  DNA: 'err1st'
+
 module.exports = Err1st
