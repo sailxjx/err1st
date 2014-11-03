@@ -1,5 +1,5 @@
 should = require('should')
-Err = require('../lib')
+Err = require('../src')
 
 describe 'err1st', ->
 

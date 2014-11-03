@@ -1,6 +1,6 @@
 should = require 'should'
-Err = require '../lib'
-{handler} = require '../lib'
+Err = require '../src'
+{handler} = require '../src'
 
 describe 'handler', ->
 
