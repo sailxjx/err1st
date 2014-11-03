@@ -1,5 +1,5 @@
-should = require('should')
-Err = require('../src')
+should = require 'should'
+Err = require '../src'
 
 describe 'err1st', ->
 
@@ -22,7 +22,6 @@ describe 'err1st', ->
       catch e
         err = e
       _compareStack(err, error)
-
 
   describe 'err1st#name', ->
 

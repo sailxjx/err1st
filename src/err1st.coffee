@@ -5,6 +5,8 @@ class Err1st extends Error
     if phrase instanceof Error
       @message = phrase.message
       @phrase = phrase.message
+      @code = phrase.code
+      @status = phrase.status
     else
       @message = phrase
       @phrase = phrase
@@ -15,8 +17,8 @@ class Err1st extends Error
         get: -> @_longcode
         set: (longcode) ->
           @_longcode = Number(longcode)
-          @code = Number(String(longcode)[3..])
-          @status = Number(String(longcode)[0..2])
+          @code or= Number(String(longcode)[3..])
+          @status or= Number(String(longcode)[0..2])
 
   toJSON: ->
     code: @code

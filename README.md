@@ -47,6 +47,9 @@ Err1st: Alice, 你犯了个错误
 
 # ChangeLog
 
+## 0.1.3
+* keep the status and code of original error object
+
 ## 0.1.2
 * use 'DNA' to identify the same error instance
 

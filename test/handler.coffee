@@ -12,8 +12,7 @@ describe 'handler', ->
       NO_OBJECT: 674621
       UPDATE_ERROR: [
         500102,
-        (field) ->
-          "#{field} 更新错误"
+        (field) -> "#{field} 更新错误"
       ]
       LANG_ERROR: [500201]
       STRING_ERROR: [123455, 'something wrong']
@@ -92,6 +91,13 @@ describe 'handler', ->
       errZh.toMsg().should.be.eql('无错误码')
       errZh.toCode().should.be.eql(100)
 
+    it 'should parse the native error object and keep the original status', ->
+      err = new Error('SOMETHING_WRONG')
+      err.status = 419
+      _err = handler.parse err
+      _err.message.should.eql 'SOMETHING_WRONG'
+      _err.status.should.eql 419
+
   describe 'handler#customErrorName', ->
 
     it 'should have custom error name', ->
@@ -99,8 +105,7 @@ describe 'handler', ->
       _handler = new handler.Handler
       _handler.validate ->
         @name = 'CustomError'
-        @map =
-          UPDATE_ERROR: [500102, "更新错误"]
+        @map = UPDATE_ERROR: [500102, "更新错误"]
 
         err = new Err("UPDATE_ERROR")
         _handler.parse(err).toString().should.be.eql('CustomError: 更新错误')
@@ -110,14 +115,6 @@ describe 'handler', ->
     it 'should get correct Err object from code', ->
       err = new Err('DB_ERROR')
       handler.restore(101).toString().should.be.eql(err.toString())
-
-  describe 'handler#fromOriginalError', ->
-
-    it 'should output the message from the original error object', ->
-
-      err = new Error('SOMETHING_WRONG')
-      _err = handler.parse(err)
-      _err.message.should.eql('SOMETHING_WRONG')
 
   describe 'handler#ignoreWordCase', ->
 
