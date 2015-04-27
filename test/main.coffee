@@ -74,12 +74,23 @@ describe 'Main', ->
     err.locale('zh').message.should.eql '🙅'
 
   it 'should direct set the _locales field of each phrase', ->
-    Err.localeMeta 'zh', 'message',
+    Err.localeMeta 'zh',
       HELLO: (name) -> "你好，#{name}!"
 
-    Err.localeMeta 'en', 'message',
+    Err.localeMeta 'en',
       HELLO: (name) -> "Hello, #{name}!"
 
     err = new Err 'HELLO', 'World'
     err.message.should.eql "你好，World!"
     err.locale('en').message.should.eql 'Hello, World!'
+
+    # Merge the other _locale fields
+    Err.localeMeta 'zh',
+      HELLO:
+        code: 333
+        status: 401
+
+    err = new Err 'HELLO', 'World'
+    err.code.should.eql 333
+    err.status.should.eql 401
+    err.message.should.eql "你好，World!"

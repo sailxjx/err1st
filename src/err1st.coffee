@@ -35,10 +35,9 @@ class Err1st extends Error
     @phrase = phrase
     @params = params
 
-    if phrase instanceof Err1st
-      return
-    else if phrase instanceof Error
-      @phrase = phrase.name or 'Error'
+    if phrase instanceof Error
+      @phrase = phrase.phrase or phrase.name or 'Error'
+      @params = phrase.params
       _meta = @constructor._meta[@phrase] or
         code: phrase.code
         status: phrase.status
@@ -75,7 +74,7 @@ class Err1st extends Error
       @_meta[phrase][key] = val for key, val of _meta
     @_meta
 
-  @localeMeta: (lang, field, meta) ->
+  @localeMeta: (lang, meta) ->
     for phrase, _meta of meta
       @_meta[phrase] or= {}
       @_meta[phrase]._locales or= {}
