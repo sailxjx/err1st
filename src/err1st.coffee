@@ -59,7 +59,7 @@ class Err1st extends Error
       if toString.call(@meta.message) is '[object Function]'
         @meta.message.apply this, @params
       else
-        @meta.message or 'Unknown Error'
+        @meta.message or @phrase
 
   toJSON: ->
     status: @status

@@ -8,5 +8,5 @@ Err.localeMeta 'en', 'message', en
 
 err = new Err('SOMETHING_WRONG', 'Alice')
 
-throw err
-throw err.locale('en')
+console.log err.message
+console.log err.locale('en').message
