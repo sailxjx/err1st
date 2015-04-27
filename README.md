@@ -1,7 +1,9 @@
-err1st [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url]
+err1st
 ======
 
 Custom `error` object
+
+[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url]
 
 We hate errors, but we can not live without them.
 
