@@ -1,7 +1,9 @@
-err1st [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url]
+Err1st
 ======
 
-Custom `error` object
+Custom `Error` object
+
+[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url]
 
 We hate errors, but we can not live without them.
 
@@ -9,43 +11,43 @@ We hate errors, but we can not live without them.
 
 Use err1st as an standard error object
 
-```coffee-script
+```coffeescript
 Err = require 'err1st'
 err = new Err('SOMETHING_WRONG')
 throw err
 ```
 
-Customize the error message and add i18n support
-```coffee-script
+Customize the error message
+
+```coffeescript
 Err = require 'err1st'
-{handler} = Err
-err = new Err('SOMETHING_WRONG', 'Alice')
 
-handler.validate ->
-  @localeDir = __dirname  # Set you path to i18n configration files, these file should be named by language, e.g. 'en.json', 'zh.js'
-  @locales = ['en', 'zh']  # Set supported languages, first is the default one
-  @map = SOMETHING_WRONG: 500100  # Set your error code map
+Err.meta
+  SOMETHING_WRONG:
+    status: 400
+    code: 100
+    message: (name) -> "something wrong, #{name}"
 
-throw handler.parse err
-throw handler.parse err, lang: 'zh'
-```
+err = new Err 'SOMETHING_WRONG', 'Alice'
+throw err  ==>  Err1st: "something wrong, Alice" ....
 
-# Output
-```
-Err1st: Alice, you've got something wrong
-  at Object.<anonymous> (/Users/tristan/coding/err1st/examples/index.coffee:3:11)
-  at Object.<anonymous> (/Users/tristan/coding/err1st/examples/index.coffee:1:1)
-  at Module._compile (module.js:456:26)
+# With i18n locales
+Err.localeMeta 'emoji',
+  SOMETHING_WRONG: (name) -> "🙅, #{name}"
+  ...
 
-> or
+Err.localeMeta 'en',
+  SOMETHING_WRONG: (name) -> "something wrong, #{name}"
 
-Err1st: Alice, 你犯了个错误
-  at Object.<anonymous> (/Users/tristan/coding/err1st/examples/index.coffee:3:11)
-  at Object.<anonymous> (/Users/tristan/coding/err1st/examples/index.coffee:1:1)
-  at Module._compile (module.js:456:26)
+err = new Err 'SOMETHING_WRONG', 'Bob'
+console.log err.message  ==>  "🙅, Bob"
+console.log err.locale('en').message  ==>  "something wrong, #{name}"
 ```
 
 # ChangeLog
+
+## 0.2.0
+* Remove handler, parse the messages by the Err object itself.
 
 ## 0.1.3
 * keep the status and code of original error object
