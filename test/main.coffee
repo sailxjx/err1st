@@ -72,3 +72,14 @@ describe 'Main', ->
     err = new Err 'ERROR'
     err.message.should.eql 'something wrong'
     err.locale('zh').message.should.eql '🙅'
+
+  it 'should direct set the _locales field of each phrase', ->
+    Err.localeMeta 'zh', 'message',
+      HELLO: (name) -> "你好，#{name}!"
+
+    Err.localeMeta 'en', 'message',
+      HELLO: (name) -> "Hello, #{name}!"
+
+    err = new Err 'HELLO', 'World'
+    err.message.should.eql "你好，World!"
+    err.locale('en').message.should.eql 'Hello, World!'

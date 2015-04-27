@@ -9,7 +9,7 @@ _parseMeta = (meta) ->
     code = Number(String(meta)[3...])
     _meta = status: status, code: code
 
-  else if toString.call(meta) is '[object String]'
+  else if toString.call(meta) is '[object String]' or toString.call(meta) is '[object Function]'
     _meta = message: meta
 
   else if toString.call(meta) is '[object Array]'
@@ -38,30 +38,28 @@ class Err1st extends Error
     if phrase instanceof Err1st
       return
     else if phrase instanceof Error
-      @message = phrase.message or 'Unknown Error'
       @phrase = phrase.name or 'Error'
-      @code = phrase.code or 100
-      @status = phrase.status or 500
+      _meta = @constructor._meta[@phrase] or
+        code: phrase.code
+        status: phrase.status
+        message: phrase.message
     else
-      _meta = @constructor._meta[phrase] or
-        status: 500
-        code: 100
-        message: 'Unknown Error'
+      _meta = @constructor._meta[phrase] or {}
 
-      Object.defineProperty this, 'meta',
-        get: ->
-          return _meta unless _meta._locales
-          # Use the first key as default language
-          @_lang or= Object.keys(_meta._locales)[0]
-          _meta = util._extend _meta, _meta._locales[@_lang]
-          _meta
-      Object.defineProperty this, 'code', get: -> @meta.code
-      Object.defineProperty this, 'status', get: -> @meta.status
-      Object.defineProperty this, 'message', get: ->
-        if toString.call(@meta.message) is '[object Function]'
-          @meta.message.apply this, @params
-        else
-          @meta.message
+    Object.defineProperty this, 'meta',
+      get: ->
+        return _meta unless _meta._locales
+        # Use the first key as default language
+        @_lang or= Object.keys(_meta._locales)[0]
+        _meta = util._extend _meta, _meta._locales[@_lang]
+        _meta
+    Object.defineProperty this, 'code', get: -> @meta.code or 100
+    Object.defineProperty this, 'status', get: -> @meta.status or 500
+    Object.defineProperty this, 'message', get: ->
+      if toString.call(@meta.message) is '[object Function]'
+        @meta.message.apply this, @params
+      else
+        @meta.message or 'Unknown Error'
 
   toJSON: ->
     status: @status
@@ -74,10 +72,17 @@ class Err1st extends Error
     for phrase, _meta of meta
       @_meta[phrase] or= {}
       _meta = _parseMeta _meta
-      for key, val of _meta
-        if key is '_locales'
-          @_meta[phrase]
-        @_meta[phrase][key] = val
+      @_meta[phrase][key] = val for key, val of _meta
+    @_meta
+
+  @localeMeta: (lang, field, meta) ->
+    for phrase, _meta of meta
+      @_meta[phrase] or= {}
+      @_meta[phrase]._locales or= {}
+      _locales = @_meta[phrase]._locales[lang] or {}
+      _meta = _parseMeta _meta
+      _locales[key] = val for key, val of _meta
+      @_meta[phrase]._locales[lang] = _locales
     @_meta
 
 module.exports = Err1st
