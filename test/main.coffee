@@ -19,6 +19,11 @@ describe 'Main', ->
     err.toString().should.eql("Err1st: Original")
     _compareStack(err, error)
 
+  it 'should return Err1st object when constuct with Err1st object', ->
+    err = new Err('error')
+    _err = new Err(err)
+    err.stack.should.eql _err.stack
+
   it 'should parse the phrase to locale message', ->
     # Use the complete meta structure
     Err.meta

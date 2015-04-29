@@ -23,65 +23,69 @@ _parseMeta = (meta) ->
 
   _meta
 
-class Err1st extends Error
+Err1st = (phrase, params...) ->
+  if phrase instanceof Err1st
+    return phrase
 
-  name: 'Err1st'
+  Error.captureStackTrace(this, arguments.callee)
+  @phrase = phrase
+  @params = params
 
-  @_meta: {}
+  if phrase instanceof Error
+    @phrase = phrase.phrase or phrase.name or 'Error'
+    @params = phrase.params
+    _meta = @constructor._meta[@phrase] or
+      code: phrase.code
+      status: phrase.status
+      message: phrase.message
+  else
+    _meta = @constructor._meta[phrase] or {}
 
-  constructor: (args...) ->
-    Error.captureStackTrace(this, arguments.callee)
-    [phrase, params...] = args
-    @phrase = phrase
-    @params = params
-
-    if phrase instanceof Error
-      @phrase = phrase.phrase or phrase.name or 'Error'
-      @params = phrase.params
-      _meta = @constructor._meta[@phrase] or
-        code: phrase.code
-        status: phrase.status
-        message: phrase.message
+  Object.defineProperty this, 'meta',
+    get: ->
+      return _meta unless _meta._locales
+      # Use the first key as default language
+      @_lang or= Object.keys(_meta._locales)[0]
+      _meta = util._extend _meta, _meta._locales[@_lang]
+      _meta
+  Object.defineProperty this, 'code', get: -> @meta.code or 100
+  Object.defineProperty this, 'status', get: -> @meta.status or 500
+  Object.defineProperty this, 'message', get: ->
+    if toString.call(@meta.message) is '[object Function]'
+      @meta.message.apply this, @params
     else
-      _meta = @constructor._meta[phrase] or {}
+      @meta.message or @phrase
 
-    Object.defineProperty this, 'meta',
-      get: ->
-        return _meta unless _meta._locales
-        # Use the first key as default language
-        @_lang or= Object.keys(_meta._locales)[0]
-        _meta = util._extend _meta, _meta._locales[@_lang]
-        _meta
-    Object.defineProperty this, 'code', get: -> @meta.code or 100
-    Object.defineProperty this, 'status', get: -> @meta.status or 500
-    Object.defineProperty this, 'message', get: ->
-      if toString.call(@meta.message) is '[object Function]'
-        @meta.message.apply this, @params
-      else
-        @meta.message or @phrase
+  this
 
-  toJSON: ->
-    status: @status
-    code: @code
-    message: @message
+Err1st.prototype.__proto__ = Error.prototype
 
-  locale: (@_lang) -> this
+Err1st.prototype.name = 'Err1st'
 
-  @meta: (meta) ->
-    for phrase, _meta of meta
-      @_meta[phrase] or= {}
-      _meta = _parseMeta _meta
-      @_meta[phrase][key] = val for key, val of _meta
-    @_meta
+Err1st.prototype.toJSON =  ->
+  status: @status
+  code: @code
+  message: @message
 
-  @localeMeta: (lang, meta) ->
-    for phrase, _meta of meta
-      @_meta[phrase] or= {}
-      @_meta[phrase]._locales or= {}
-      _locales = @_meta[phrase]._locales[lang] or {}
-      _meta = _parseMeta _meta
-      _locales[key] = val for key, val of _meta
-      @_meta[phrase]._locales[lang] = _locales
-    @_meta
+Err1st.prototype.locale = (@_lang) -> this
+
+Err1st._meta = {}
+
+Err1st.meta = (meta) ->
+  for phrase, _meta of meta
+    @_meta[phrase] or= {}
+    _meta = _parseMeta _meta
+    @_meta[phrase][key] = val for key, val of _meta
+  @_meta
+
+Err1st.localeMeta = (lang, meta) ->
+  for phrase, _meta of meta
+    @_meta[phrase] or= {}
+    @_meta[phrase]._locales or= {}
+    _locales = @_meta[phrase]._locales[lang] or {}
+    _meta = _parseMeta _meta
+    _locales[key] = val for key, val of _meta
+    @_meta[phrase]._locales[lang] = _locales
+  @_meta
 
 module.exports = Err1st

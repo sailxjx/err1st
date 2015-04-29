@@ -9,4 +9,6 @@ Err.localeMeta 'en', en
 err = new Err('SOMETHING_WRONG', 'Alice')
 
 console.log err.message
+console.log err.stack
 console.log err.locale('en').message
+console.log err.locale('en').stack
