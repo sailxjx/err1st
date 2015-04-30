@@ -4,20 +4,23 @@ Err = require '../src/err1st'
 describe 'Main', ->
 
   _compareStack = (err, error) ->
-    stackErrors = error.stack.split('\n')[2..]
-    stackErrs = err.stack.split('\n')[2..]
-    stackErrs.should.be.eql(stackErrors)
+
 
   it 'should return the same stack string as Error', ->
     error = new Error('error')
     err = new Err('error')
-    _compareStack(err, error)
+    errorStack = error.stack.split('\n')[2..]
+    errStack = err.stack.split('\n')[2..]
+    errorStack.should.be.eql(errStack)
 
   it 'should convert original Error object to Err1st object', ->
     error = new Error('Original')
     err = new Err(error)
     err.toString().should.eql("Err1st: Original")
-    _compareStack(err, error)
+    # err and error should have the same trace stack
+    errorStack = error.stack.split('\n')[1..]
+    errStack = err.stack.split('\n')[1..]
+    errorStack.should.be.eql(errStack)
 
   it 'should return Err1st object when constuct with Err1st object', ->
     err = new Err('error')

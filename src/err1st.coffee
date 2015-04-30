@@ -27,11 +27,12 @@ Err1st = (phrase, params...) ->
   if phrase instanceof Err1st
     return phrase
 
-  Error.captureStackTrace(this, arguments.callee)
-  @phrase = phrase
-  @params = params
-
   if phrase instanceof Error
+    if phrase.stack
+      Object.defineProperty this, 'stack', value: phrase.stack
+    else
+      Error.captureStackTrace(this, arguments.callee)
+
     @phrase = phrase.phrase or phrase.name or 'Error'
     @params = phrase.params
     _meta = @constructor._meta[@phrase] or
@@ -39,6 +40,9 @@ Err1st = (phrase, params...) ->
       status: phrase.status
       message: phrase.message
   else
+    @phrase = phrase
+    @params = params
+    Error.captureStackTrace(this, arguments.callee)
     _meta = @constructor._meta[phrase] or {}
 
   Object.defineProperty this, 'meta',
