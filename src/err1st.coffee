@@ -33,12 +33,13 @@ Err1st = (phrase, params...) ->
     else
       Error.captureStackTrace(this, arguments.callee)
 
-    @phrase = phrase.phrase or phrase.name or 'Error'
+    @phrase = phrase.phrase or 'unknown_error'
     @params = phrase.params
-    _meta = @constructor._meta[@phrase] or
+    _meta = util._extend
       code: phrase.code
       status: phrase.status
       message: phrase.message
+    , @constructor._meta[@phrase] or {}
   else
     @phrase = phrase
     @params = params
@@ -73,7 +74,7 @@ Err1st.prototype.toJSON =  ->
 
 Err1st.prototype.locale = (@_lang) -> this
 
-Err1st._meta = {}
+Err1st._meta = unknown_error: code: 100, status: 500
 
 Err1st.meta = (meta) ->
   for phrase, _meta of meta

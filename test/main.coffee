@@ -3,9 +3,6 @@ Err = require '../src/err1st'
 
 describe 'Main', ->
 
-  _compareStack = (err, error) ->
-
-
   it 'should return the same stack string as Error', ->
     error = new Error('error')
     err = new Err('error')
