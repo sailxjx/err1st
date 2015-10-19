@@ -59,7 +59,8 @@ Err1st = (phrase, params...) ->
     if toString.call(@meta.message) is '[object Function]'
       @meta.message.apply this, @params
     else
-      @meta.message or @phrase
+      _args = [].concat [@meta.message or @phrase], (@params or [])
+      util.format.apply util, _args
 
   this
 

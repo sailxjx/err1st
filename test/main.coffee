@@ -99,3 +99,8 @@ describe 'Main', ->
     err.code.should.eql 333
     err.status.should.eql 401
     err.message.should.eql "你好，World!"
+
+  it 'should mix the params in phrase and get the formated message', ->
+
+    err = new Err 'You have %d unread messages', 3
+    err.message.should.eql 'You have 3 unread messages'
