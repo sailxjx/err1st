@@ -1,6 +1,6 @@
 {
   "name": "err1st",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Custom error object",
   "main": "lib/err1st.js",
   "scripts": {
