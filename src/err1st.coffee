@@ -1,8 +1,28 @@
 util = require 'util'
 
+_reversedKeys = ['code', 'status', 'message']
+
+###*
+ * Check keys of meta and set incognizant keys to locales
+ * @param  {Object} meta
+ * @return {Object} meta
+###
+_autoParseLocale = (meta) ->
+  _meta = {}
+  for key, val of meta
+    if key is '_locales'
+      _meta[key] = val
+      continue
+    if key in _reversedKeys
+      _meta[key] = val
+    else
+      _meta._locales or= {}
+      _meta._locales[key] = _parseMeta val
+  _meta
+
 _parseMeta = (meta) ->
   if toString.call(meta) is '[object Object]'
-    _meta = meta
+    _meta = _autoParseLocale(meta)
 
   else if /^-?[0-9]+$/.test meta
     status = Number(String(meta)[0...3])
@@ -14,7 +34,7 @@ _parseMeta = (meta) ->
 
   else if toString.call(meta) is '[object Array]'
     _meta = meta.reduce (meta, cur) ->
-      _cur = _parseMeta(cur)
+      _cur = _autoParseLocale(_parseMeta(cur))
       meta[key] = val for key, val of _cur
       meta
     , {}

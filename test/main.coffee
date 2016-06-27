@@ -52,12 +52,20 @@ describe 'Main', ->
 
   it 'should init the meta with short syntax', ->
     Err.meta
-      SHORT_ERROR: [400100, 'short message']
+      ONLY_EN: [400100, 'only en']
+      MULTI_LANG: [400101, {
+        en: 'English',
+        zh: '中文'
+      }]
 
-    err = new Err 'SHORT_ERROR'
+    err = new Err 'ONLY_EN'
     err.status.should.eql 400
     err.code.should.eql 100
-    err.message.should.eql 'short message'
+    err.message.should.eql 'only en'
+
+    err = new Err 'MULTI_LANG'
+    err.message.should.eql 'English'
+    err.locale('zh').message.should.eql '中文'
 
   it 'should merge the meta when calling the meta method more than once', ->
     Err.meta ERROR: 400100  # Record status and code

@@ -20,8 +20,6 @@ throw err
 Customize the error message
 
 ```coffeescript
-Err = require 'err1st'
-
 Err.meta
   SOMETHING_WRONG:
     status: 400
@@ -44,7 +42,30 @@ console.log err.message  ==>  "🙅, Bob"
 console.log err.locale('en').message  ==>  "something wrong, #{name}"
 ```
 
+Combine meta and locales together
+
+```coffeescript
+Err.meta
+  completed:
+    status: 400
+    code: 100
+    locales:
+      en: 'English'
+      zh: '中文'
+  flatten: [400100, {  # Treat keys of object as language, except 'code', 'status', 'locales'
+    en: 'English',
+    zh: '中文'
+  }]
+  useFunction: [400100, {
+    en: -> 'English'
+    zh: -> '中文'
+  }]
+```
+
 # ChangeLog
+
+## 0.2.6
+- Support auto detect locale keys when use `meta` function
 
 ## 0.2.0
 * Remove handler, parse the messages by the Err object itself.
