@@ -1,6 +1,6 @@
 util = require 'util'
 
-_reversedKeys = ['code', 'status', 'message']
+_reversedKeys = ['code', 'status', 'message', '_locales']
 
 ###*
  * Check keys of meta and set incognizant keys to locales
@@ -10,12 +10,8 @@ _reversedKeys = ['code', 'status', 'message']
 _autoParseLocale = (meta) ->
   _meta = {}
   for key, val of meta
-    if key is '_locales'
-      _meta[key] = val
-      continue
-    if key in _reversedKeys
-      _meta[key] = val
-    else
+    _meta[key] = val
+    unless key in _reversedKeys
       _meta._locales or= {}
       _meta._locales[key] = _parseMeta val
   _meta

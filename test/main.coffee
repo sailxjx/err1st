@@ -112,3 +112,12 @@ describe 'Main', ->
 
     err = new Err 'You have %d unread messages', 3
     err.message.should.eql 'You have 3 unread messages'
+
+  it 'should bind custom properties onto meta', ->
+    Err.meta
+      CUSTOM_PROPERTY:
+        status: 400
+        code: 123
+        sayHello: "Hello"
+    err = new Err('CUSTOM_PROPERTY')
+    err.meta.should.have.properties('status', 'code', 'sayHello')

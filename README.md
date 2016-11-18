@@ -64,8 +64,11 @@ Err.meta
 
 # ChangeLog
 
+## 0.2.7
+* Support provide customized properties on meta [#4](https://github.com/sailxjx/err1st/issues/4)
+
 ## 0.2.6
-- Support auto detect locale keys when use `meta` function
+* Support auto detect locale keys when use `meta` function
 
 ## 0.2.0
 * Remove handler, parse the messages by the Err object itself.
